@@ -1,0 +1,8 @@
+To add custom compiler flags (e.g to reduce compiled file size, enble C99 etc.) refer: 
+https://stackoverflow.com/questions/28037491/arduino-1-0-6-how-to-change-compiler-flag
+
+Note: 
+You can save platform.local.txt for each project in its directory. It will NOT have any effect in project's directory, but this way if you decide to work on your old project again you will be able to just copy it to the same directory where platform.txt is (typically ./hardware/arduino/avr/) and continue work on your project with project-specific compiler flags.
+
+
+
