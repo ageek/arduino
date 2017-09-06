@@ -12,4 +12,10 @@ http://cyaninfinite.com/tutorials/interfacing-a-i2c-0-96-oled-display-with-attin
 https://tinusaur.org/2014/08/29/c-library-for-attiny85-to-work-with-ssd1306-controlled-oled-display/
 
 
+digispark EEPROM lib: 
+https://github.com/digistump/DigistumpArduino/issues/34
+
+
+
+
 
