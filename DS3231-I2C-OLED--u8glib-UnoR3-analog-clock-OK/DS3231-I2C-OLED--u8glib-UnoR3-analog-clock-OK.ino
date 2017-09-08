@@ -131,7 +131,7 @@ void draw(void) {
   u8g.drawLine(clockCentreX,clockCentreY,x3,y3);
   
   // display minute hand
-  angle = myRTC.getMinute() * 6 ;
+  angle = myRTC.getMinute() * 6 ; // + int((myRTC.second() /60 ) * 6); 
   angle=(angle/57.29577951) ; //Convert degrees to radians  
   x3=(clockCentreX+(sin(angle)*(20-3)));
   y3=(clockCentreY-(cos(angle)*(20-3)));
@@ -206,8 +206,8 @@ void loop(void) {
     draw();
   } while( u8g.nextPage() );
   
-  // rebuild the picture after some delay
-  delay(1000);
+  // rebuild the picture after some delay - we dont need this for real clock
+  //delay(1000);
 }
 
   //********for internal temperature sensor
