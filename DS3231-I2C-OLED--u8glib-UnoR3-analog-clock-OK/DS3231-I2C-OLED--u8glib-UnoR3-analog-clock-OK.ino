@@ -103,7 +103,7 @@ void draw(void) {
   u8g.drawStr(2,10, newTime);  
 
   // for testing/debugging purposes only
-  Serial.println(newTime);
+  //Serial.println(newTime);
   
   
   // ***********Now draw the clock face
@@ -174,14 +174,14 @@ void draw(void) {
     thisTemp1 = String(GetTemp());
    }
 
-   thisTemp1 = thisTemp1 + "C";
+   thisTemp1 = thisTemp1 +  " C";
    // printing output as follows used less program storage space
    const char* thisTemp = (const char*) thisTemp1.c_str();
-   u8g.drawStr(85,10,thisTemp);   
+   u8g.drawStr(80,10,thisTemp);   
 }
 
 void setup(void) {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   // If you want to set the aref to something other than 5v
   //  analogReference(EXTERNAL);
   //  Wire.begin();
