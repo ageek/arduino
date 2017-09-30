@@ -2,3 +2,6 @@ From Device Manager, browse to this unzipped ch340 folder and let window install
 
 Ref: 
 http://www.wch.cn/download/CH341SER_ZIP.html
+
+===================
+for digispark windows driver refer the micronuclues zip
