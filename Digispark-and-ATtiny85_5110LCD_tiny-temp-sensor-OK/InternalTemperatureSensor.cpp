@@ -2,13 +2,7 @@
 #include "InternalTemperatureSensor.h"
 //#include "SoftwareSerial.h"
 
-// for digispark
-//Sketch uses 5156 bytes (85%) of program storage space. Maximum is 6012 bytes.
-//Global variables use 130 bytes of dynamic memory.
 
-//for attiny85
-//Sketch uses 4396 bytes (53%) of program storage space. Maximum is 8192 bytes.
-//Global variables use 124 bytes (24%) of dynamic memory, leaving 388 bytes for local variables. Maximum is 512 bytes.
 
 //You can adjust the rolling average parameters, but overall I do not recommend making TEMPERATURE_SAMPLES 
 //less than 20 and greater than 50. If it’s less than 20 then deviation grows significantly. Making 
