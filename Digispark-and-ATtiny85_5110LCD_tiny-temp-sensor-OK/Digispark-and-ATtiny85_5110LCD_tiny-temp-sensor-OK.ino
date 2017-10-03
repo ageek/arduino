@@ -62,18 +62,12 @@ void setup(void) {
 
 void loop(void) {
   
- myGLCD.setFont(BigNumbers);
+	myGLCD.setFont(BigNumbers);
  
-
     float t;
- 
-    
-    myGLCD.printNumF(29.8, 1, CENTER, 14);
-
     t = (float) temperature.in_c();   // This returns more usable temperature in degrees Celsius
 
     //myGLCD.printNumF(29.8, 1, CENTER, 14);
-
     myGLCD.printNumF(t, 1, CENTER, 14);
 
     // for debugging only - display temp value to soft serial out
