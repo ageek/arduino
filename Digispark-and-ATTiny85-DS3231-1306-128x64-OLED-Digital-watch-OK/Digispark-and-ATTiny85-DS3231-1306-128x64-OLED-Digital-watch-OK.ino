@@ -126,8 +126,11 @@ void setup() {
   TinyWireM.begin();
   oled.begin();
   oled.fill(0x00); // clear in black
-  // test, finally set time using DS3231 chip
-  //setTime();
+  // set time using DS3231 chip
+  // void setDS3231time(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year)
+  // Sunday=1 ... Saturday=7
+  // run once while setting time for DS3231 chip
+  //setDS3231time( 22,  49,  10,  6,  13,  10,  2017);    // working OK, only year 2017 is showing as 0065 - needs fixing
 }
 
 void loop() {
