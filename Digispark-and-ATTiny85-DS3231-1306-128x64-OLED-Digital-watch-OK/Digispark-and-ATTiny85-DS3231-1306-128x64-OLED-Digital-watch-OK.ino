@@ -45,6 +45,8 @@ SSD1306 oled;
 #define DS3231_TEMPERATURE_MSB 0x11
 #define DS3231_TEMPERATURE_LSB 0x12
 
+char dow[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
 // Convert normal decimal numbers to binary coded decimal
 byte decToBcd(byte val)
 {
@@ -130,7 +132,11 @@ void setup() {
   // void setDS3231time(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year)
   // Sunday=1 ... Saturday=7
   // run once while setting time for DS3231 chip
-  //setDS3231time( 22,  49,  10,  6,  13,  10,  2017);    // working OK, only year 2017 is showing as 0065 - needs fixing
+  //setDS3231time(40,  40,  22,  1,  15,  10,  17);    // working OK, 
+  
+  // following line sets the RTC to the date & time this sketch was compiled
+  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+
 }
 
 void loop() {
@@ -201,22 +207,28 @@ void draw_oled() {
     // 1st rows: print date
     // void print_digits(uint8_t col, uint8_t page, uint8_t font_size, uint32_t factor, uint32_t digits, bool invert_color);
     /* print_digits(col, page, size, factor, digits) */
-    oled.print_digits(0, 0, 1, 1000, year, false);
+    int start=20;
+    oled.print_digits(start+0, 0, 1, 1000, 2000+year, false);
     /* draw_pattern(col, page, width, pattern) */
-    oled.draw_pattern(29, 0, 2, 0b00010000); // dash
-    oled.print_digits(32, 0, 1, 10, month,  false);
-    oled.draw_pattern(47, 0, 2, 0b00010000); // dash
-    oled.print_digits(50, 0, 1, 10, dayOfMonth,  false);
-    // 2nd-4th rows: print time
-    oled.print_digits(0, 1, 2, 10, hour,  false);
-    oled.draw_pattern(33, 2, 2, (second & 1) ? 0b11000011 : 0); // blink colon
-    oled.print_digits(35, 1, 2, 10, minute,  false);
-
-    //oled.print_digits(72, 2, 1, 10, second,  false);
-
+    oled.draw_pattern(start+29, 0, 2, 0b00010000); // dash
+    oled.print_digits(start+32, 0, 1, 10, month,  false);
+    oled.draw_pattern(start+47, 0, 2, 0b00010000); // dash
+    oled.print_digits(start+50, 0, 1, 10, dayOfMonth,  false);
+    
     // print ds3231 temp in int...will add oled.print_flaot() later
     int ds3231temp = (int) DS3231_getTemperature();
-    oled.print_digits(90, 2, 1, 10, ds3231temp,  false);
+    oled.print_digits(95, 0, 1, 10, ds3231temp,  false);    
+
+    // print day
+    //oled.print_string()
+    
+    // 2nd-4th rows: print time
+    oled.print_digits(20, 1, 2, 10, hour,  false);
+    oled.draw_pattern(53, 2, 2, (second & 1) ? 0b11000011 : 0); // blink colon
+    oled.print_digits(55, 1, 2, 10, minute,  false);
+    oled.print_digits(95, 2, 1, 10, second,  false);
+
+
     
     
 }
