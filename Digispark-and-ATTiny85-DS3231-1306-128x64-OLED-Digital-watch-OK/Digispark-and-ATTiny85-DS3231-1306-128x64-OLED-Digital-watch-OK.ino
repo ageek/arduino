@@ -224,8 +224,9 @@ void draw_oled() {
     
     // 2nd-4th rows: print time
     oled.print_digits(20, 1, 2, 10, hour,  false);
+    // TODO: blink every second, not on every alternate second 
     oled.draw_pattern(53, 2, 2, (second & 1) ? 0b11000011 : 0); // blink colon
-    oled.print_digits(55, 1, 2, 10, minute,  false);
+    oled.print_digits(57, 1, 2, 10, minute,  false);
     oled.print_digits(95, 2, 1, 10, second,  false);
 
 
