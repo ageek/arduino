@@ -3,6 +3,7 @@
 #include "InternalTemperatureSensor.h"
 //#include <SoftwareSerial.h>  //pin2 already blocked by 5110 LCD, also disabled for using same code for digispark kit
 
+// Memory usage: 
 // for digispark
 //Sketch uses 5156 bytes (85%) of program storage space. Maximum is 6012 bytes.
 //Global variables use 130 bytes of dynamic memory.
@@ -41,7 +42,15 @@
 //                  /  /  /  ____ RST
 //                 /  /  /  /  __ CS (CE)
 //                /  /  /  /  /
-  LCD5110 myGLCD(0, 1, 2, 3, 6); //D6 don't exist - conect CS to GND
+//  LCD5110 myGLCD(0, 1, 2, 3, 6); //D6 don't exist - conect CS to GND
+
+    LCD5110 myGLCD(1, 2, 3, 4, 6); //D6 don't exist - conect CS to GND   - Seq: 12346  working
+//  LCD5110 myGLCD(2, 3, 4, 5, 6); //D6 don't exist - conect CS to GND   - Seq: 23456  working
+
+  
+//  LCD5110 myGLCD(1, 3, 4,5, 6); //D6 don't exist - conect CS to GND   - Seq: 13456  Not working, why??? this seq spares SCL and SDA for I2C devices...but not working
+
+  
 
 extern uint8_t BigNumbers[];
 
@@ -62,12 +71,15 @@ void setup(void) {
 
 void loop(void) {
   
-	myGLCD.setFont(BigNumbers);
+    myGLCD.setFont(BigNumbers);
  
+
     float t;
+
     t = (float) temperature.in_c();   // This returns more usable temperature in degrees Celsius
 
     //myGLCD.printNumF(29.8, 1, CENTER, 14);
+
     myGLCD.printNumF(t, 1, CENTER, 14);
 
     // for debugging only - display temp value to soft serial out
