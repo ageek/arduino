@@ -1,3 +1,6 @@
+// dht.x files copied from below location (bottom ones)
+// https://playground.arduino.cc/Main/DHTLib
+//
 /*********************************************************************
 This is an example sketch for our Monochrome Nokia 5110 LCD Displays
 
@@ -17,7 +20,7 @@ All text above, and the splash screen must be included in any redistribution
 *********************************************************************/
 
 
-#include <dht.h>
+#include "dht.h"
 
 // Mesh facing front
 // L 2 R
