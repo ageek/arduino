@@ -1,3 +1,6 @@
+// dht.x files copied from below location (bottom ones)
+// https://playground.arduino.cc/Main/DHTLib
+
 /*
 
   HelloWorld.pde
@@ -14,7 +17,7 @@
   
 */
 
-#include <dht.h>
+#include "dht.h"
 
 // Mesh facing front
 // L 2 R
