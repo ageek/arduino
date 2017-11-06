@@ -22,6 +22,9 @@ RTC DS3231
 
 
 #define DS3231_I2C_ADDRESS 0x68
+#define DS3231_TEMPERATURE_MSB 0x11
+#define DS3231_TEMPERATURE_LSB 0x12
+
 
 // setup u8g object
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);  // I2C 
@@ -127,33 +130,25 @@ void draw(void) {
   //==========Temperature 
 
   //*********for now lets try print Temp using Arduino internal temp sensor
-   String thisTemp1 = String(GetTemp()) + "C";
+//   String thisTemp1 = String(GetTemp()) + "C";
+//   // printing output as follows used less program storage space
+//   const char* thisTemp = (const char*) thisTemp1.c_str();
+//   // u8glib API ref: https://github.com/olikraus/u8glib/wiki/userreference 
+//   u8g.drawStr(85,10,thisTemp); 
+
+   // OR - use DS3231's internal temp sensor which is quite accurate
+   
+   String thisTemp1 = String(DS3231_getTemperature()) + "C";
    // printing output as follows used less program storage space
    const char* thisTemp = (const char*) thisTemp1.c_str();
    // u8glib API ref: https://github.com/olikraus/u8glib/wiki/userreference 
    u8g.drawStr(85,10,thisTemp); 
-
-   // OR - use DS3231's internal temp sensor which is quite accurate
+   
 }
 
 void setup(void) {
   Wire.begin(); //for ds3231
   Serial.begin(9600);
-  // If you want to set the aref to something other than 5v
-  //  analogReference(EXTERNAL);
-  //  Wire.begin();
-  //  RTC.begin();
-  //  if (! RTC.isrunning()) {
-  //    Serial.println("RTC is NOT running!");
-  //    // following line sets the RTC to the date & time this sketch was compiled
-  //    RTC.adjust(DateTime(__DATE__, __TIME__));
-  //  }
-
-  // initial date and time information 
-  // After the information, comment the line below 
-  // (seconds, minutes, hour, day of the week, day of the month, month, year) 
-  //myRTC.setDS1302Time(18, 52, 19, 6, 26, 8, 2017);
-
 }
 
 void loop(void) {
@@ -162,9 +157,7 @@ void loop(void) {
   do {
     draw();
   } while( u8g.nextPage() );
-  
-  // rebuild the picture after some delay
-  //delay(1000);
+   
 }
 
 ///////////////////////////////////////////
@@ -212,6 +205,37 @@ void readDS3231time(byte *second, byte *minute, byte *hour, byte *dayOfWeek, byt
   *year = bcdToDec(Wire.read());
 }
 
+//*******************************Taken from Uno DS3231.cpp lib
+// Working perfectly for Digispark AND ATtiny85 
+float DS3231_getTemperature() {
+  // Checks the internal thermometer on the DS3231 and returns the 
+  // temperature as a floating-point value.
+
+  // Updated / modified a tiny bit from "Coding Badly" and "Tri-Again"
+  // http://forum.arduino.cc/index.php/topic,22301.0.html
+  
+  byte tMSB, tLSB;
+  float temp3231;
+  
+  // temp registers (11h-12h) get updated automatically every 64s
+  Wire.beginTransmission(DS3231_I2C_ADDRESS);
+  Wire.write(0x11);
+  Wire.endTransmission();
+  Wire.requestFrom(DS3231_I2C_ADDRESS, 2);
+
+  // Should I do more "if available" checks here?
+  if(Wire.available()) {
+    tMSB = Wire.read(); //2's complement int portion
+    tLSB = Wire.read(); //fraction portion
+
+    temp3231 = ((((short)tMSB << 8) | (short)tLSB) >> 6) / 4.0;
+  }
+  else {
+    temp3231 = -9999; // Some obvious error value
+  }
+   
+  return temp3231;
+}
 
 
   //********for internal temperature sensor
