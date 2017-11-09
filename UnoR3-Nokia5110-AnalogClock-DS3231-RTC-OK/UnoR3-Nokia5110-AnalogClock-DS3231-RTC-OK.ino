@@ -3,6 +3,10 @@
  * v1.1
  * Adapted to use current date/time from DS3231 RTC module
  * 
+ * v1.2
+ * Added option to display full date, DS3231 temp etc
+ * 
+ * ===========================
  * Nokia 5110 Random Clock
  * v. 1.0
  * Copyright (C) 2016 Robert Ulbricht
@@ -14,9 +18,33 @@
 #include <Adafruit_PCD8544.h>
 #include <Wire.h>
 
-#define DS1307_ADDRESS 0x68     //same for DS3231 as well
+#define DS3231_ADDRESS 0x68     //same for DS3231 as well
+
+#define DS3231_TEMPERATURE_MSB 0x11
+#define DS3231_TEMPERATURE_LSB 0x12
+
+char mon[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 byte zero = 0x00; //workaround for issue #527
+
+//option to display digital clock, year etc
+
+//option 1
+// 22:34:54
+// 8 Nov
+//  2017
+// 22.3 C
+int opt=1;     //default
+
+//option 2
+// h=22
+// m=54
+// s=20
+// d=8
+// m=11
+// y=17
+
+
 
 // Software SPI (slower updates, more flexible pin options):
 // pin 7 - Serial clock out (SCLK)
@@ -50,11 +78,11 @@ void loop() {
  //Read data from DS3231 RTC module using Wire lib
  
  // Reset the register pointer
- Wire.beginTransmission(DS1307_ADDRESS);
+ Wire.beginTransmission(DS3231_ADDRESS);
  Wire.write(zero);
  Wire.endTransmission();
 
- Wire.requestFrom(DS1307_ADDRESS, 7);
+ Wire.requestFrom(DS3231_ADDRESS, 7);
 
  int s = bcdToDec(Wire.read());
  int m = bcdToDec(Wire.read());
@@ -67,7 +95,7 @@ void loop() {
   
   for(int i=0;i<10;i++)
     {
-    drawClock(h,m,s);
+    drawClock(h,m,s,monthDay,month,year);
     delay(1000);
     s++;
     if(s>=60) m++;
@@ -78,7 +106,8 @@ void loop() {
     }
 }
 
-void drawClock(int h, int m, int s)
+
+void drawClock(int h, int m, int s, int monthDay, int month, int year)
 {
 const int r=23;   //drawCircle is not drawing a proper circle...looks oval
 const double rot=-M_PI/2;
@@ -110,10 +139,7 @@ double x,y,x0,y0,anglerad;
     display.drawLine(24+x0,24+y0,24+x,24+y,BLACK);
     }
 
-  // hour
-  display.setCursor(50,0);
-  display.print("h=");
-  display.print(h);
+
   anglerad=2*M_PI/12*(h%12)+2*M_PI/12/60*m+rot;
   x=(r-15)*cos(anglerad);
   y=(r-15)*sin(anglerad);
@@ -121,10 +147,7 @@ double x,y,x0,y0,anglerad;
   y0=0;
   display.drawLine(24+x0,24+y0,24+x,24+y,BLACK);
   
-  // minute
-  display.setCursor(50,9);
-  display.print("m=");
-  display.print(m);
+
   anglerad=2*M_PI/60*m+rot;
   x=(r-10)*cos(anglerad);
   y=(r-10)*sin(anglerad);
@@ -132,10 +155,7 @@ double x,y,x0,y0,anglerad;
   y0=0;
   display.drawLine(24+x0,24+y0,24+x,24+y,BLACK);
 
-  // second
-  display.setCursor(50,18);
-  display.print("s=");
-  display.print(s);
+
   anglerad=2*M_PI/60*s+rot;
   x=(r-5)*cos(anglerad);
   y=(r-5)*sin(anglerad);
@@ -152,10 +172,96 @@ double x,y,x0,y0,anglerad;
 //  display.drawLine(83,0,83,3,BLACK);
 //  display.drawLine(83,47,83-3,47,BLACK);
 //  display.drawLine(83,47,83,47-3,BLACK);
+
+if(opt == 2) {
+  // hour
+  display.setCursor(50,0);
+  display.print("h=");
+  display.print(h);
+  
+  // minute
+  display.setCursor(50,8);
+  display.print("m=");
+  display.print(m);
+  // second
+  display.setCursor(50,16);
+  display.print("s=");
+  display.print(s);
+  
+  // dayofmonth
+  display.setCursor(50,24);
+  display.print("d=");
+  display.print(monthDay);
+  // month
+  display.setCursor(50,32);
+  display.print("m=");
+  display.print(month);
+  // year
+  display.setCursor(50,40);
+  display.print("y=");
+  display.print(year);
+} else {
+  //option 1
+  // 22:34
+  // 8 Nov
+  // 2017
+  // 22.3 C
+  
+  display.setCursor(50,0);
+  display.print(h);
+  s%2==0? display.print(":") : display.print(" ");  //blink every alternate sec
+  display.print(m);
+
+  
+  display.setCursor(50,10);  
+  display.print(monthDay);
+  display.print(" ");
+  display.print(mon[month-1]);
+  display.setCursor(55,20); 
+  display.print(2000+year);
+  
+  
+}
+  //print temp sensed by DS3231 RTC module
+  
+  display.setCursor(50,40);
+  //display.print("T=");
+  display.print(DS3231_getTemperature());
   
   display.display();  
 }
 
+//*******************************Taken from Uno DS3231.cpp lib
+// Working perfectly for Digispark AND ATtiny85 
+float DS3231_getTemperature() {
+  // Checks the internal thermometer on the DS3231 and returns the 
+  // temperature as a floating-point value.
+
+  // Updated / modified a tiny bit from "Coding Badly" and "Tri-Again"
+  // http://forum.arduino.cc/index.php/topic,22301.0.html
+  
+  byte tMSB, tLSB;
+  float temp3231;
+  
+  // temp registers (11h-12h) get updated automatically every 64s
+  Wire.beginTransmission(DS3231_ADDRESS);
+  Wire.write(0x11);
+  Wire.endTransmission();
+  Wire.requestFrom(DS3231_ADDRESS, 2);
+
+  // Should I do more "if available" checks here?
+  if(Wire.available()) {
+    tMSB = Wire.read(); //2's complement int portion
+    tLSB = Wire.read(); //fraction portion
+
+    temp3231 = ((((short)tMSB << 8) | (short)tLSB) >> 6) / 4.0;
+  }
+  else {
+    temp3231 = -9999; // Some obvious error value
+  }
+   
+  return temp3231;
+}
 
 // supporting methods for DS3231
 byte decToBcd(byte val){
