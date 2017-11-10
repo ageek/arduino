@@ -61,7 +61,7 @@ void setup() {
   Wire.begin();
   // put your setup code here, to run once:
   display.begin();
-  display.setContrast(45);
+  display.setContrast(45);    // 30 for non-backlit and 45 for backlit display 
   display.clearDisplay();
   display.display(); // show splashscreen
 
@@ -210,10 +210,13 @@ if(opt == 2) {
   display.setCursor(50,0);
   display.print(h);
   s%2==0? display.print(":") : display.print(" ");  //blink every alternate sec
-  display.print(m);
+
+  //display 1 as 01, 2 as 02 etc. till 9 as 09 for min
+  char dd[10][3]={"00","01","02","03","04","05","06","07","08","09"};
+  m<10 ? display.print(dd[m]): display.print(m);
 
   
-  display.setCursor(50,10);  
+  display.setCursor(48,10);  
   display.print(monthDay);
   display.print(" ");
   display.print(mon[month-1]);
