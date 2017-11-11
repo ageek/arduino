@@ -2,28 +2,21 @@
 // Nov 2017: 
 //  Modified to use U8glib for analog clock display on 5110 using DS3231
 
+// Add libraries
 #include "U8glib.h"
 #include <Wire.h>
 
+
 #define DS3231_I2C_ADDRESS 0x68
 #define DS3231_TEMPERATURE_MSB 0x11
-#define DS3231_TEMPERATURE_LSB 0x12 
+#define DS3231_TEMPERATURE_LSB 0x12
 
-#define backlight 5
- 
-//Delcare the display and assign the pins
 
-// AdaFruit lib to U8glib pin mappings
-// pin 7 - Serial clock out (SCLK)3
-// pin 6 - Serial data out (DIN)4
-// pin 5 - Data/Command select (D/C)5
-// pin 4 - LCD chip select (CS)7
-// pin 3 - LCD reset (RST)6
-//Adafruit_PCD8544 display = Adafruit_PCD8544(3, 4, 5, 7, 6);
-
-//U8GLIB_PCD8544 u8g(8, 4, 7, 5, 6);  // CLK=8, DIN=4, CE=7, DC=5, RST=6
+// setup u8g object
+//U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);  // I2C 
 
 U8GLIB_PCD8544 u8g(3,4,7,5,6);  // CLK=8, DIN=4, CE=7, DC=5, RST=6
+         
 
 char monthString[37]= {"JanFebMarAprMayJunJulAugSepOctNovDec"};
 int  monthIndex[122] ={0,3,6,9,12,15,18,21,24,27,30,33};
@@ -33,13 +26,10 @@ String thisDay="";
 int clockCentreX = 20; // used to fix the centre the analog clock
 int clockCentreY = 24; // used to fix the centre the analog clock
 
-
+//
  
-void draw() {
- 
-  u8g.setFont(u8g_font_profont15);  // select font
 
-
+void draw(void) {
   //
   byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
   // retrieve data from DS3231
@@ -50,6 +40,7 @@ void draw() {
   // graphic commands to redraw the complete screen should be placed here  
   u8g.setFont(u8g_font_profont15);
   //u8g.setFont(u8g_font_6x10); 
+  //
   
   //********* display date at bottom of screen
   thisDay = String((int)dayOfMonth, DEC) + "/"; 
@@ -66,14 +57,14 @@ void draw() {
  
   // *********display time in digital format
   thisTime="";
-  thisTime=String((int)hour) + ":";
+  thisTime=String((int)hour) ;
+  thisTime += (int)second %2==0? " " : ":" ;
   if ((int)minute < 10){ thisTime=thisTime + "0";} // add leading zero if required
-  
   thisTime=thisTime + String((int)minute) ;
   //if ((int)second < 10){ thisTime=thisTime + "0";} // add leading zero if required
   //thisTime=thisTime + String((int)second);
   const char* newTime = (const char*) thisTime.c_str();
-  u8g.drawStr(42,10, newTime);  
+  u8g.drawStr(45,10, newTime);  
 
   // for testing/debugging purposes only
   Serial.println(newTime);
@@ -130,26 +121,23 @@ void draw() {
    String thisTemp1 = String(DS3231_getTemperature()) + "C";
    // printing output as follows used less program storage space
    const char* thisTemp = (const char*) thisTemp1.c_str();
-   u8g.drawStr(40,40,thisTemp);    
+   // u8glib API ref: https://github.com/olikraus/u8glib/wiki/userreference 
+   u8g.drawStr(40,40,thisTemp); 
+   
 }
- 
-void setup() {
-  // Set Backlight Intensity
-  // 0 is Fully bright
-  // 255 is off
-  analogWrite(backlight, 80);
-  //
-  // Enter the U8Glib Picture Loop
-  //
-  
+
+void setup(void) {
+  Wire.begin(); //for ds3231
+  Serial.begin(9600);
 }
- 
-void loop() { 
- u8g.firstPage(); 
+
+void loop(void) {
+  // picture loop
+  u8g.firstPage();  
   do {
     draw();
-  } while( u8g.nextPage() ); 
-  
+  } while( u8g.nextPage() );
+   
 }
 
 ///////////////////////////////////////////
@@ -228,5 +216,3 @@ float DS3231_getTemperature() {
    
   return temp3231;
 }
-
-
