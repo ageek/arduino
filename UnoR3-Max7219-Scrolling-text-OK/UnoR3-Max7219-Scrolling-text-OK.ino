@@ -8,15 +8,20 @@
 #include <avr/pgmspace.h>
 #include <LedControl.h>
 
-const int numDevices = 1;      // number of MAX7219s used
-const long scrollDelay = 100;   // adjust scrolling speed
+const int numDevices = 4;      // number of MAX7219s used
+const long scrollDelay = 50;   // adjust scrolling speed
 
 unsigned long bufferLong [14] = {0}; 
+//LedControl lc=LedControl(12,11,10,numDevices);
 
-LedControl lc=LedControl(12,11,10,numDevices);
+//edit pins as maxmatrix example
+//int data = 8;    // DIN pin of MAX7219 module
+//int load = 9;    // CS pin of MAX7219 module
+//int clock = 10;  // CLK pin of MAX7219 module
+LedControl lc=LedControl(8,10,9,numDevices);  // Pins: DIN,CLK,CS, # of Display connected
 
 const unsigned char scrollText[] PROGMEM ={
-    "  THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG 1234567890 the quick brown fox jumped over the lazy dog   \0"};
+    "  THE QUICK BROWNING FOX JUMPS OVER THE LAZY DOG 1234567890 the quick brown fox jumped over the lazy dog   \0"};
 
 void setup(){
     for (int x=0; x<numDevices; x++){
