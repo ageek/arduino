@@ -139,14 +139,17 @@ void setup(void)
 {
   P.begin(2);
   P.setInvert(false);
+  
 
   P.setZone(0, 0, MAX_DEVICES-5);
   P.setZone(1, MAX_DEVICES-4, MAX_DEVICES-1);
   P.setFont(1, numeric7Seg);
 
   P.displayZoneText(1, szTime, PA_LEFT, SPEED_TIME, PAUSE_TIME, PA_PRINT, PA_NO_EFFECT);
-  P.displayZoneText(0, szMesg, PA_LEFT, SPEED_TIME, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+  //P.displayZoneText(0, szMesg, PA_LEFT, SPEED_TIME, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
 
+  // set intensity from 0(lowest) to 15(max)
+  P.setIntensity(0);
   P.addChar('$', degC);
 //  P.addChar('&', degF);
 
