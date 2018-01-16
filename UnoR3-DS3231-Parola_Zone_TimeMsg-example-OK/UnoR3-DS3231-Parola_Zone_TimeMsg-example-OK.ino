@@ -109,7 +109,7 @@ void getTime(char *psz, bool f = true)
 {
 #if	USE_DS1307
   RTC.readTime();
-  sprintf(psz, "%02d%c%02d", RTC.h, (f ? ':' : ' '), RTC.m);
+  sprintf(psz, "%02d%c%02d%c%01d", RTC.h, (f ? ':' : ' '), RTC.m, RTC.s%10);
 #else
   uint16_t  h, m, s;
 
@@ -137,16 +137,23 @@ void getDate(char *psz)
 
 void setup(void)
 {
+  // pass number of zones
   P.begin(2);
   P.setInvert(false);
-  
 
-  P.setZone(0, 0, MAX_DEVICES-5);
-  P.setZone(1, MAX_DEVICES-4, MAX_DEVICES-1);
+  //custom zone boundaries for 4 in 1 module kit
+  P.setZone(0, 0, 1);
+  P.setZone(1, 2, 3);
+//  P.setZone(0, 0, MAX_DEVICES-5);
+//  P.setZone(1, MAX_DEVICES-4, MAX_DEVICES-1);
   P.setFont(1, numeric7Seg);
 
+//  let zone 0 use default fonts
+//  P.setFont(0, numeric7Seg);
+  
+
   P.displayZoneText(1, szTime, PA_LEFT, SPEED_TIME, PAUSE_TIME, PA_PRINT, PA_NO_EFFECT);
-  //P.displayZoneText(0, szMesg, PA_LEFT, SPEED_TIME, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+  P.displayZoneText(0, szMesg, PA_LEFT, SPEED_TIME, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
 
   // set intensity from 0(lowest) to 15(max)
   P.setIntensity(0);
@@ -169,56 +176,91 @@ void loop(void)
 
   P.displayAnimate();
 
+//  if (P.getZoneStatus(0))
+//  {
+//    switch (display)
+//    {
+//      case 0: // Temperature deg C
+//        P.setTextEffect(0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+//        display++;
+//#if USE_DHT11
+//        if (DHT11.read(DHT11_PIN) == 0)
+//        {
+//          dtostrf(DHT11.temperature, 3, 1, szMesg);
+//          strcat(szMesg, "$");
+//        }
+//#else
+//        //strcpy(szMesg, "22.0$");
+//#endif
+//        break;
+//
+//      case 1: // Temperature deg F
+//        P.setTextEffect(0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+//        display++;
+//#if USE_DHT11
+//        if (DHT11.read(DHT11_PIN) == 0)
+//        {
+//          dtostrf((1.8 * DHT11.temperature)+32, 3, 1, szMesg);
+//          strcat(szMesg, "&");
+//        }
+//#else
+//        strcpy(szMesg, "71.6&");
+//#endif
+//        break;
+//
+//      case 2: // Relative Humidity
+//        P.setTextEffect(0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+//        display++;
+//#if	USE_DHT11
+//        if (DHT11.read(DHT11_PIN) == 0)
+//        {
+//          dtostrf(DHT11.humidity, 3, 0, szMesg);
+//          strcat(szMesg, "% RH");
+//        }
+//#else
+//        strcpy(szMesg, "36 % RH");
+//#endif
+//        break;
+//
+//      case 3: // day of week
+//        P.setTextEffect(0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+//        display++;
+//#if	USE_DS1307
+//        dow2str(RTC.dow, szMesg, MAX_MESG);
+//#else
+//        dow2str(4, szMesg, MAX_MESG);
+//#endif
+//        break;
+//
+//      default:  // Calendar
+//        P.setTextEffect(0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+//        display = 0;
+//        getDate(szMesg);
+//        break;
+//    }
+//
+//    P.displayReset(0);
+//  }
+
+
   if (P.getZoneStatus(0))
   {
     switch (display)
     {
       case 0: // Temperature deg C
-        P.setTextEffect(0, PA_SCROLL_LEFT, PA_SCROLL_UP_LEFT);
-        display++;
-#if USE_DHT11
-        if (DHT11.read(DHT11_PIN) == 0)
-        {
-          dtostrf(DHT11.temperature, 3, 1, szMesg);
-          strcat(szMesg, "$");
-        }
-#else
-        //strcpy(szMesg, "22.0$");
-#endif
-        break;
-
-      case 1: // Temperature deg F
-        P.setTextEffect(0, PA_SCROLL_UP_LEFT, PA_SCROLL_LEFT);
-        display++;
-#if USE_DHT11
-        if (DHT11.read(DHT11_PIN) == 0)
-        {
-          dtostrf((1.8 * DHT11.temperature)+32, 3, 1, szMesg);
-          strcat(szMesg, "&");
-        }
-#else
-        strcpy(szMesg, "71.6&");
-#endif
-        break;
-
-      case 2: // Relative Humidity
         P.setTextEffect(0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
         display++;
-#if	USE_DHT11
-        if (DHT11.read(DHT11_PIN) == 0)
-        {
-          dtostrf(DHT11.humidity, 3, 0, szMesg);
-          strcat(szMesg, "% RH");
-        }
-#else
-        strcpy(szMesg, "36 % RH");
-#endif
+
+        //read temp from ds3231 chip       
+        dtostrf(RTC.DS3231_getTemperature(), 3, 1, szMesg);
+        strcat(szMesg, "$");
+
         break;
 
-      case 3: // day of week
+      case 1: // day of week
         P.setTextEffect(0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
         display++;
-#if	USE_DS1307
+#if USE_DS1307
         dow2str(RTC.dow, szMesg, MAX_MESG);
 #else
         dow2str(4, szMesg, MAX_MESG);
@@ -236,7 +278,9 @@ void loop(void)
   }
 
   // Finally, adjust the time string if we have to
-  if (millis() - lastTime >= 1000)
+  // changed diff to 500ms for flashing dots every sec 
+  // default was 1000ms
+  if (millis() - lastTime >= 500)
   {
     lastTime = millis();
     getTime(szTime, flasher);
