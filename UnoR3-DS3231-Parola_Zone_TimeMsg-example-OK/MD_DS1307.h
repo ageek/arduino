@@ -149,6 +149,11 @@ The DS1307_LCD_Time example has examples of the different ways of interacting wi
 // Device parameters
 #define DS1307_RAM_MAX  64  ///< Total number of RAM registers that can be read from the device
 
+
+//added for reading temp from DS3231 temp sensor
+#define DS3231_TEMPERATURE_MSB      0x11
+#define DS3231_TEMPERATURE_LSB      0x12
+
 /**
  * Core object for the MD_DS1307 library
  */
@@ -300,6 +305,9 @@ class MD_DS1307
    * \return dow value calculated [1..7], where 1 = Sunday.
    */
   uint8_t calcDoW(uint16_t yyyy, uint8_t mm, uint8_t dd);
+
+  // read ds3231 internal temp sensor data
+  float DS3231_getTemperature();
 
   /** @} */
 
