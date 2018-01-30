@@ -142,21 +142,22 @@ void setup(void)
 ////  P.displayZoneText(0, szMesg, PA_LEFT, SPEED_TIME, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
 //
   // set intensity from 0(lowest) to 15(max)
-  P.setIntensity(1);
-  P.addChar('$', degC);
+//  P.setIntensity(1);
+//  P.addChar('$', degC);
   
 //
   RTC.control(DS1307_CLOCK_HALT, DS1307_OFF);
   RTC.control(DS1307_12H, DS1307_OFF);
-//
-//  getTime(szTime);
+
 
   P.begin();
   P.setFont(numeric7Seg);
+  P.setIntensity(1);
+  
   getTime(szTime, true);
   P.displayText(szTime, PA_CENTER, 100, 0, PA_WIPE_CURSOR, PA_PRINT);
   //P.displayText(szTime, PA_CENTER, P.getSpeed(), PAUSE_TIME, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
-
+  while (!P.displayAnimate());
 }
 
 void loop(void)
@@ -167,28 +168,35 @@ void loop(void)
 
     P.setIntensity(1);
     P.addChar('$', degC);
+    
 //v 2.0
-  if(P.displayAnimate()) 
+//  if(P.displayAnimate()) 
   { 
     //P.setTextEffect(PA_PRINT, PA_PRINT);
+
     RTC.readTime();
     getTime(szTime, flasher);
     P.displayText(szTime, PA_CENTER, 10, 0, PA_PRINT, PA_PRINT);
+    while (!P.displayAnimate());
   
-    if (RTC.s%10==0) {
+    if (RTC.s==5) {
      //read temp from ds3231 chip       
      dtostrf(RTC.DS3231_getTemperature(), 3, 1, szMesg);
      strcat(szMesg, "$");
      //strcpy(szTime, szMesg);
      P.displayText(szMesg, PA_CENTER, 100, 3000, PA_SCROLL_UP, PA_SCROLL_UP);
+     //delay(2000);     //blank screen for x mili seconds
 
-     P.displayClear();
-     P.displayReset();
+     while (!P.displayAnimate()) ; // animates and returns true when an animation is completed
+        
+//     P.displayClear();
+//     P.displayReset();
 
-     //char msgBuf[21]="";
-     //getDate(msgBuf);
+     char msgBuf[21]="";
+     getDate(msgBuf);
      //dow2str(RTC.dow, msgBuf, MAX_MESG);
-     //P.displayText(msgBuf, PA_CENTER, 100, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+     P.displayText(msgBuf, PA_CENTER, 100, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+     while (!P.displayAnimate()) ; // animates and returns true when an animation is completed
      
      //P.displayClear();
      //P.displayReset();
@@ -214,8 +222,8 @@ void loop(void)
 //        getDate(szMesg);
 //        break;
 //    }
-
-    P.displayReset();
+//
+//    P.displayReset();
   }
 
   // Finally, adjust the time string if we have to
