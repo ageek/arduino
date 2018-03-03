@@ -42,9 +42,9 @@
 //                  /  /  /  ____ RST
 //                 /  /  /  /  __ CS (CE)
 //                /  /  /  /  /
-//  LCD5110 myGLCD(0, 1, 2, 3, 6); //D6 don't exist - conect CS to GND
+  LCD5110 myGLCD(0, 1, 2, 3, 6); //D6 don't exist - conect CS to GND
 
-    LCD5110 myGLCD(1, 2, 3, 4, 6); //D6 don't exist - conect CS to GND   - Seq: 12346  working
+//    LCD5110 myGLCD(1, 2, 3, 4, 6); //D6 don't exist - conect CS to GND   - Seq: 12346  working
 //  LCD5110 myGLCD(2, 3, 4, 5, 6); //D6 don't exist - conect CS to GND   - Seq: 23456  working
 
   

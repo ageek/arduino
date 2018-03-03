@@ -1,7 +1,7 @@
 #ifndef _INTERNAL_TEMPERATURE_SENSOR_H_
 #define _INTERNAL_TEMPERATURE_SENSOR_H_
 #define TEMPERATURE_SAMPLES 40
-#define TEMPERATURE_ADJUSTMENT -13
+#define TEMPERATURE_ADJUSTMENT -15    //Gives temp closest to the one measured by DS3231 RTC temp sensor
 #define EXTREMES_RATIO 5
 #define MAXINT 32767
 #define MININT -32767
