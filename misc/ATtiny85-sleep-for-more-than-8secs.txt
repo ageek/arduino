@@ -1,0 +1,20 @@
+https://www.insidegadgets.com/2011/02/05/reduce-attiny-power-consumption-by-sleeping-with-the-watchdog-timer/
+
+Ben says:
+May 13, 2011 at 2:33 am
+This is an awesome tutorial. I will be making an auto filling water bowl for my dogs. I was looking at the code and was wondering if I can make the attiny85 sleep longer than 8sec. I really only need to check the level once a minute. I see, in setup_watchdog, that if ii>9 it will be set to 9. Can this number only be a single digit?
+
+Reply
+Alex says:
+May 13, 2011 at 8:07 pm
+Hi Ben,
+
+The maximum sleep time for the watchdog timer is 8 seconds (9 value), this is taken from the ATtiny25/45/85 datasheet on page 32.
+
+Potentially you could just have a counter variable which would count to 7 or thereabouts (7 x 8sec sleep = 56sec) which is incremented/compared and once it reaches 7 it runs your water level check code. The downside is that it will always wake up every 8 seconds however the power consumption used when waking up, checking the counter variable and then going back to sleep would be small, it would probably only last 50ms. An example is shown in Standalone Temperature Logger Part 7.
+
+However if really sleeping for 1 second is required, then the ATmega168/328 might be the way to go, it costs more and is larger. On page 39 of the ATmega168/328 data sheet it shows that it can be woken up by timer2 so potentially you could configure timer2 to count up to exactly 1 second by selecting the right prescaler and/or enabling the compare. I think a separate clock source is needed though.
+
+So the easiest solution is to use a counter and watchdog timer if exact timing isn’t that important and extreme battery life isn’t needed.
+
+Reply
