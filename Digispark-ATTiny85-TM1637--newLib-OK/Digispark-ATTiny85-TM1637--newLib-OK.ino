@@ -221,7 +221,8 @@ TM1637_write_byte(uint8_t value)
 }
 
 // main code
-int main(void)
+int
+main(void)
 {
   uint8_t n, k = 0;
 
