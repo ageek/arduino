@@ -30,8 +30,9 @@
 
 #include <avr/pgmspace.h>
 
-#define TM1637_CLK_PIN 0    // attiny85 pin Pin0
-#define TM1637_DIO_PIN 2    // attiny85 pin Pin2
+#define TM1637_CLK_PIN 1    // attiny85 pin Pin1  // 0 and 2 freed up for I2C (ds3231 usage)
+#define TM1637_DIO_PIN 3    // attiny85 pin Pin3  (DIO on PB4 for digispark kit is not working, why???)
+
 
 #define  TM1637_DIO_HIGH()   (PORTB |= _BV(TM1637_DIO_PIN))
 #define TM1637_DIO_LOW()    (PORTB &= ~_BV(TM1637_DIO_PIN))

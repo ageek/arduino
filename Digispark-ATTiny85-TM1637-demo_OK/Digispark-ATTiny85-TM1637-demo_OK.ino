@@ -1,4 +1,3 @@
-//https://github.com/reeedstudio/libraries/tree/master/DigitalTube
 //  Author:Frankie.Chu
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -14,8 +13,8 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "TM1637.h"
-#define CLK 0     //attiny85 pin P0 //pins definitions for TM1637 and can be changed to other ports       
-#define DIO 2     //attiny85 pin P2
+#define CLK 1     //attiny85 pin P1 //pins definitions for TM1637 and can be changed to other ports       
+#define DIO 3     //attiny85 pin P3     // (DIO on PB4 for digispark kit is not working, why???)
 TM1637 tm1637(CLK,DIO);
 
 void setup()
