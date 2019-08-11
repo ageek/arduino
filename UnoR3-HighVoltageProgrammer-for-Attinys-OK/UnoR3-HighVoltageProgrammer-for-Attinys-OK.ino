@@ -1,3 +1,8 @@
+// On mysetup - factory set default signature is this. YMMV
+//Signature930B
+//, LFuse: 62, HFuse: DF, EFuse: FF
+//, LFuse: 62, HFuse: DF, EFuse: FF
+
 // AVR High-voltage Serial Fuse Reprogrammer
     // Adapted from code and design by Paul Willoughby 03/20/2010
     // http://www.rickety.us/2010/03/arduino-avr-high-voltage-serial-programmer/
@@ -50,8 +55,9 @@
         pinMode(SDO, INPUT);      // Set SDO to input
         delayMicroseconds(300);
         unsigned int sig = readSignature();
-        Serial.print("Signature");
+        Serial.print("ATtiny chip Signature:");
         Serial.println(sig, HEX);
+        Serial.println("Current/Existing fuse setting:");
         readFuses();
         if (sig == ATTINY13) {
           writeFuse(LFUSE, 0x6A);
@@ -62,6 +68,7 @@
           writeFuse(HFUSE, 0xDF);
           writeFuse(EFUSE, 0xFF);
         }
+        Serial.println("Set (ATtiny85) to L: 0x62, H: 0xDF, E: 0xFF, & re-read");
         readFuses();
         digitalWrite(SCI, LOW);
         digitalWrite(VCC, LOW);    // Vcc Off
