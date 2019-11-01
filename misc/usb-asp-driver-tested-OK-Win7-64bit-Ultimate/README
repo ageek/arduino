@@ -1,0 +1,7 @@
+Unzip the driver tar and , while installing the driver via Device Manager in Windows 7
+point the folder to the unzipped location and it'll pick the drivers and install it 
+afterwords.
+
+Grab the latest tar from this location: https://www.fischl.de/usbasp/
+
+Btw, I'm using the el-cheapo USBasp from AliX
